@@ -37,8 +37,10 @@ sudo docker swarm join --token <join token> <master ip>:2377
 `sudo ip link set dev ens19 mtu 9001`
 
 ## disable all icmp for all (real case)
-`sudo iptables -A INPUT -p icmp -j DROP`
-`sudo iptables -A OUTPUT -p icmp -j DROP`
+````
+sudo iptables -A INPUT -p icmp -j DROP
+sudo iptables -A OUTPUT -p icmp -j DROP
+````
 
 ## Create sample app (on master node)
 ````
@@ -87,7 +89,6 @@ version: "3.8"
 
 services:
   data-api-worker1:
-    build: .
     image: vourteen14/data-api:latest
     ports:
       - target: 5000
@@ -97,7 +98,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == worker1
+          - node.hostname == worker
 EOF
 
 # docker-compose-worker2.yml
@@ -106,7 +107,6 @@ version: "3.8"
 
 services:
   data-api-worker2:
-    build: .
     image: vourteen14/data-api:latest
     ports:
       - target: 5000
@@ -244,6 +244,37 @@ indicate swarm try to add new neighbor entry but i seem there as missmatch infor
 
 ## Solution
 ### Change overlay MTU same as core NIC
+#### add new overlay interface with 9001 mtu
+````
+sudo docker network create --driver overlay --opt com.docker.network.driver.mtu=9001 --attachable overlay_9001_net
+````
+
+#### attach ke service
+````
+# docker-compose-worker1.yml
+cat <<EOF > docker-compose1.yml
+version: "3.8"
+
+services:
+  data-api-worker1:
+    image: vourteen14/data-api:latest
+    networks:
+      - overlay_9001_net
+    ports:
+      - target: 5000
+        published: 8088
+        protocol: tcp
+        mode: ingress
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == worker
+networks:
+  overlay_9001_net:
+    external: true
+EOF
+````
+
 ### Another solution is under research
 
 ## Cleanup on all nodes

@@ -1,6 +1,5 @@
 
-## Step to reproduce
-
+# Step to reproduce
 ## Swarm Cluster setup
 master:   10.30.11.11
 worker1:  10.30.11.12

@@ -34,11 +34,11 @@ sudo docker swarm join --token <join token> <master ip>:2377
 ````
 
 ## set all interface mtu to 9001 on all nodes (in case: ens19)
-sudo ip link set dev ens19 mtu 9001
+`sudo ip link set dev ens19 mtu 9001`
 
 ## disable all icmp for all (real case)
-sudo iptables -A INPUT -p icmp -j DROP
-sudo iptables -A OUTPUT -p icmp -j DROP
+`sudo iptables -A INPUT -p icmp -j DROP`
+`sudo iptables -A OUTPUT -p icmp -j DROP`
 
 ## Create sample app (on master node)
 ````
@@ -191,19 +191,19 @@ sudo systemctl restart nginx
 ````
 
 ## add to hostname (on master or outher server that can access master swarm)
-echo "10.30.11.11 data-api1.local" | sudo tee -a /etc/hosts > /dev/null
-echo "10.30.11.11 data-api2.local" | sudo tee -a /etc/hosts > /dev/null
+`echo "10.30.11.11 data-api1.local" | sudo tee -a /etc/hosts > /dev/null`
+`echo "10.30.11.11 data-api2.local" | sudo tee -a /etc/hosts > /dev/null`
 
 ## Start reproduce MTU mismatch
 ### do this on another node (out of swarm cluster)
-while(true); do curl -s http://data-api1.local/generate?size=10240; done
+`while(true); do curl -s http://data-api1.local/generate?size=10240; done`
 
 ## and when hit the endpoint, do the service update
 ### deploy new service
-sudo docker service create --name sleeper --replicas 3 --network alphin alpine sleep 1000
+`sudo docker service create --name sleeper --replicas 3 --network alphin alpine sleep 1000`
 
 ### make a chane such as image 
-sudo docker service update --image nginx:latest sleeper
+`sudo docker service update --image nginx:latest sleeper`
 
 ## check docker logs on master, must be there has an error like below
 ````
@@ -248,8 +248,8 @@ indicate swarm try to add new neighbor entry but i seem there as missmatch infor
 
 ## Cleanup on all nodes
 ### un-drop icmp
-sudo iptables -D INPUT -p icmp -j DROP
-sudo iptables -D OUTPUT -p icmp -j DROP
+`sudo iptables -D INPUT -p icmp -j DROP`
+`sudo iptables -D OUTPUT -p icmp -j DROP`
 
-sudo apt purge docker-ce containerd.io docker-ce-cli
+`sudo apt purge docker-ce containerd.io docker-ce-cli`
 

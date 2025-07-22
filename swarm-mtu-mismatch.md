@@ -275,6 +275,26 @@ networks:
 EOF
 ````
 
+### result after test
+````
+Jul 22 14:50:27 swarm-fr1 dockerd[1389]: time="2025-07-22T14:50:27.732140615Z" level=info msg="Node d0001dec183e/10.30.11.13, joined gossip cluster"
+Jul 22 14:50:27 swarm-fr1 dockerd[1389]: time="2025-07-22T14:50:27.732592983Z" level=info msg="Node d0001dec183e/10.30.11.13, added to nodes list"
+Jul 22 14:53:03 swarm-fr1 dockerd[1389]: time="2025-07-22T14:53:03.293256307Z" level=info msg="initialized VXLAN UDP port to 4789 " module=node node.id=qp3y7z9cmjyxd8qu5qml41qsi
+Jul 22 14:54:08 swarm-fr1 dockerd[1389]: time="2025-07-22T14:54:08.407736660Z" level=warning msg="error deleting neighbor entry" error="no such file or directory" ifc=vx-001001-wgpff ip=10.30.11.12 mac="02:42:0a:00:01:08"
+Jul 22 14:54:08 swarm-fr1 dockerd[1389]: time="2025-07-22T14:54:08.408846013Z" level=warning msg="Peer delete operation failed" error="could not delete fdb entry for nid:wgpff59uaut0wcwn7n5im9m64 eid:d75ed06143e2c2bbd222866275c06eddf82257b509a31f5efd4f7dd5261ef484 into the sandbox:neighbor entry not found for IP 10.30.11.12, mac 02:42:0a:00:01:08, link vx-001001-wgpff"
+Jul 22 14:54:08 swarm-fr1 dockerd[1389]: time="2025-07-22T14:54:08.408749577Z" level=warning msg="rmServiceBinding d75ed06143e2c2bbd222866275c06eddf82257b509a31f5efd4f7dd5261ef484 possible transient state ok:false entries:0 set:false "
+Jul 22 14:54:24 swarm-fr1 dockerd[1389]: time="2025-07-22T14:54:24.345235957Z" level=info msg="Container failed to exit within 10s of signal 15 - using the force" container=2a3092d89a9698cc57f74227192ec27b2af26df5756e6740729c063f9f36eb54
+Jul 22 14:54:24 swarm-fr1 dockerd[1389]: time="2025-07-22T14:54:24.465425246Z" level=info msg="ignoring event" container=2a3092d89a9698cc57f74227192ec27b2af26df5756e6740729c063f9f36eb54 module=libcontainerd namespace=moby topic=/tasks/delete type="*events.TaskDelete"
+Jul 22 14:54:24 swarm-fr1 dockerd[1389]: time="2025-07-22T14:54:24.541927196Z" level=warning msg="rmServiceBinding 4ed60d40db61deda37008cf2811bdda71c71980990284b97e09da06595100837 possible transient state ok:false entries:0 set:false "
+Jul 22 14:54:40 swarm-fr1 dockerd[1389]: time="2025-07-22T14:54:40.506397201Z" level=warning msg="error deleting neighbor entry" error="no such file or directory" ifc=vx-001001-wgpff ip=10.30.11.13 mac="02:42:0a:00:01:07"
+Jul 22 14:54:40 swarm-fr1 dockerd[1389]: time="2025-07-22T14:54:40.506490841Z" level=warning msg="Peer delete operation failed" error="could not delete fdb entry for nid:wgpff59uaut0wcwn7n5im9m64 eid:fea6cf7159490849014846b315811a2309694cde8ba34182cc1552a79b5c95fe into the sandbox:neighbor entry not found for IP 10.30.11.13, mac 02:42:0a:00:01:07, link vx-001001-wgpff"
+Jul 22 14:54:40 swarm-fr1 dockerd[1389]: time="2025-07-22T14:54:40.506528833Z" level=warning msg="rmServiceBinding fea6cf7159490849014846b315811a2309694cde8ba34182cc1552a79b5c95fe possible transient state ok:false entries:0 set:false "
+Jul 22 14:55:10 swarm-fr1 dockerd[1389]: time="2025-07-22T14:55:10.050914269Z" level=info msg="NetworkDB stats swarm-fr1(2d19a99310cb) - netID:65lrefvnbyf8k0hgc99x7tjm5 leaving:false netPeers:3 entries:5 Queue qLen:0 netMsg/s:0"
+Jul 22 14:55:10 swarm-fr1 dockerd[1389]: time="2025-07-22T14:55:10.051881726Z" level=info msg="NetworkDB stats swarm-fr1(2d19a99310cb) - netID:wgpff59uaut0wcwn7n5im9m64 leaving:false netPeers:3 entries:21 Queue qLen:0 netMsg/s:0"
+````
+
+Still same there was a `Peer add operation failed [...] neighbor entry already exists for IP [...]` most likely mtu mismatch because normally docker doesn't support jumbo frame, However, in prod environment, ICMP is blocked or filtered and as a result, the system is unable to properly negotiate MTU, causing communication failure and errors like neighbor entry already exists
+
 ### Another solution is under research
 
 ## Cleanup on all nodes
